@@ -88,12 +88,17 @@ jobs:
         run: ls -la
         working-directory: .
 
-      # Install backend dependencies (root directory)
+      # Debug: List files in backend directory
+      - name: List files in backend directory
+        run: ls -la
+        working-directory: ./backend
+
+      # Install backend dependencies (backend directory)
       - name: Install backend dependencies
         run: |
           npm install
-        working-directory: .
-        continue-on-error: false # Fail if package.json is missing in the root
+        working-directory: ./backend
+        continue-on-error: false # Fail if package.json is missing in backend
 
       # Install frontend dependencies and build (frontend directory)
       - name: Install frontend dependencies and build
@@ -109,9 +114,10 @@ jobs:
         with:
           name: node-app
           path: |
-            . # Include the root directory (backend files)
+            ./backend # Include the backend directory (server.js, node_modules, etc.)
             ./frontend/dist # Include the frontend build output
-            !./frontend/node_modules # Exclude node_modules to reduce artifact size
+            !./backend/node_modules # Exclude backend node_modules to reduce artifact size
+            !./frontend/node_modules # Exclude frontend node_modules to reduce artifact size
 
   deploy:
     runs-on: ubuntu-latest

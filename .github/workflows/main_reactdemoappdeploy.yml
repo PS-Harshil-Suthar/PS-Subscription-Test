@@ -113,16 +113,23 @@ jobs:
         working-directory: ./mern-user-crud/frontend
         continue-on-error: false # Fail if package.json is missing in frontend
 
+      # Debug: List files in frontend/dist directory
+      - name: List files in frontend/dist directory
+        run: ls -la
+        working-directory: ./mern-user-crud/frontend/dist
+        continue-on-error: true # Continue even if dist directory is missing
+
       # Upload artifact for deployment job
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: |
-            ./mern-user-crud/backend # Include the backend directory (server.js, node_modules, etc.)
-            ./mern-user-crud/frontend/dist # Include the frontend build output
-            !./mern-user-crud/backend/node_modules # Exclude backend node_modules to reduce artifact size
-            !./mern-user-crud/frontend/node_modules # Exclude frontend node_modules to reduce artifact size
+            ./mern-user-crud/backend
+            ./mern-user-crud/frontend/dist
+            !./mern-user-crud/backend/node_modules
+            !./mern-user-crud/frontend/node_modules
+        continue-on-error: false # Fail if artifact upload fails
 
   deploy:
     runs-on: ubuntu-latest

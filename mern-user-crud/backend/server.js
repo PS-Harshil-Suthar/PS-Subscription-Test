@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: 'http://localhost:5173', methods: ['GET', 'POST', 'PUT', 'DELETE'] },
+  cors: { origin: 'https://reactdemodeploy-b7gedyc9bbgvere6.centralindia-01.azurewebsites.net/', methods: ['GET', 'POST', 'PUT', 'DELETE'] },
 });
 
 app.use(cors());
@@ -29,10 +29,7 @@ io.on('connection', (socket) => {
 
 app.set('io', io);
 
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-
-app.use(express.static("../fontend/dist"));
+app.use(express.static("../../fontend/dist"));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"))
 })
@@ -40,6 +37,11 @@ app.get("*", (req, res) => {
 app.listen(port, () => {
   console.log(`App Listening ar ${port}`);
 })
+
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+
+
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

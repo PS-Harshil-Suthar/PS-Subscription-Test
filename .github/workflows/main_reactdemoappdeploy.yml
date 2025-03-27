@@ -71,7 +71,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Changed to ubuntu-latest for consistency
+    runs-on: ubuntu-latest
     permissions:
       contents: read # Required for actions/checkout
 
@@ -82,6 +82,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+
+      # Debug: List files in root directory
+      - name: List files in root directory
+        run: ls -la
+        working-directory: .
 
       # Install backend dependencies (root directory)
       - name: Install backend dependencies

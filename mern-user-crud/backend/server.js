@@ -17,7 +17,7 @@ const io = new Server(server, {
   cors: {
     origin: [
       'http://localhost:5173', // Vite's default port for local development
-      'https://reactdemodeploy-b7geydcy9bbgv6.centralindia-01.azurewebsites.net', // Production URL (fixed typo)
+      'https://reactdemoappdeploy.azurewebsites.net/', // Production URL (fixed typo)
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
   },

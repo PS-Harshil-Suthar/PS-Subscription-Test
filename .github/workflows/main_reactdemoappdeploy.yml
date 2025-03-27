@@ -88,24 +88,29 @@ jobs:
         run: ls -la
         working-directory: .
 
+      # Debug: List files in mern-user-crud directory
+      - name: List files in mern-user-crud directory
+        run: ls -la
+        working-directory: ./mern-user-crud
+
       # Debug: List files in backend directory
       - name: List files in backend directory
         run: ls -la
-        working-directory: ./backend
+        working-directory: ./mern-user-crud/backend
 
-      # Install backend dependencies (backend directory)
+      # Install backend dependencies (mern-user-crud/backend directory)
       - name: Install backend dependencies
         run: |
           npm install
-        working-directory: ./backend
+        working-directory: ./mern-user-crud/backend
         continue-on-error: false # Fail if package.json is missing in backend
 
-      # Install frontend dependencies and build (frontend directory)
+      # Install frontend dependencies and build (mern-user-crud/frontend directory)
       - name: Install frontend dependencies and build
         run: |
           npm install
           npm run build
-        working-directory: ./frontend
+        working-directory: ./mern-user-crud/frontend
         continue-on-error: false # Fail if package.json is missing in frontend
 
       # Upload artifact for deployment job
@@ -114,10 +119,10 @@ jobs:
         with:
           name: node-app
           path: |
-            ./backend # Include the backend directory (server.js, node_modules, etc.)
-            ./frontend/dist # Include the frontend build output
-            !./backend/node_modules # Exclude backend node_modules to reduce artifact size
-            !./frontend/node_modules # Exclude frontend node_modules to reduce artifact size
+            ./mern-user-crud/backend # Include the backend directory (server.js, node_modules, etc.)
+            ./mern-user-crud/frontend/dist # Include the frontend build output
+            !./mern-user-crud/backend/node_modules # Exclude backend node_modules to reduce artifact size
+            !./mern-user-crud/frontend/node_modules # Exclude frontend node_modules to reduce artifact size
 
   deploy:
     runs-on: ubuntu-latest

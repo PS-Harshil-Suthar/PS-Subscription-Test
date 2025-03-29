@@ -57,6 +57,36 @@ jobs:
       vmImage: 'ubuntu-latest'
 
     steps:
+      # Ensure Web App Exists
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          inlineScript: |
+            APP_NAME="ReactDemoAppDeploy"
+            RESOURCE_GROUP="ReactDemoAppDeploy"  # Update if needed
+            APP_PLAN="ReactDemoAppDeployPlan"
+            LOCATION="CentralIndia"
+
+            # Check if the web app exists
+            EXISTING_APP=$(az webapp list --query "[?name=='$APP_NAME'].name" --output tsv)
+            
+            if [ -z "$EXISTING_APP" ]; then
+                echo "Web App does not exist. Creating..."
+                
+                # Create App Service Plan with F1 (Free) tier
+                az appservice plan create --name $APP_PLAN --resource-group $RESOURCE_GROUP --sku F1 --is-linux
+
+                # Create the Web App
+                az webapp create --name $APP_NAME --resource-group $RESOURCE_GROUP --plan $APP_PLAN --runtime "NODE|20-lts"
+
+                echo "Web App $APP_NAME created successfully."
+            else
+                echo "Web App $APP_NAME already exists."
+            fi
+        displayName: 'Ensure Web App Exists (F1 Free Plan)'
+
       - task: DownloadBuildArtifacts@0
         inputs:
           artifactName: 'backend'
@@ -71,16 +101,16 @@ jobs:
 
       - task: AzureWebApp@1
         inputs:
-          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
+          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'
           appType: 'webApp'
-          appName: 'ReactDemoAppDeploy'  # Replace with your Azure Web App backend name
+          appName: 'ReactDemoAppDeploy'
           package: '$(System.DefaultWorkingDirectory)/backend-artifact'
         displayName: 'Deploy Backend to Azure Web App'
 
       - task: AzureWebApp@1
         inputs:
-          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
+          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'
           appType: 'webApp'
-          appName: 'ReactDemoAppDeploy'  # Replace with your Azure Web App frontend name
+          appName: 'ReactDemoAppDeploy'
           package: '$(System.DefaultWorkingDirectory)/frontend-artifact'
         displayName: 'Deploy Frontend to Azure Web App'

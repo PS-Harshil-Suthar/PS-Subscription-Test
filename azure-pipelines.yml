@@ -1,0 +1,84 @@
+trigger:
+  - main
+
+pool:
+  name: 'Default'
+
+jobs:
+  - job: Build
+    displayName: 'Build and Prepare Node.js App'
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '20.x'
+        displayName: 'Install Node.js'
+
+      - script: |
+          # Install backend dependencies
+          cd mern-user-crud/backend
+          npm install
+
+          # Install frontend dependencies and build
+          cd ../frontend
+          npm install
+          npm run build
+        displayName: 'Install and Build Backend and Frontend'
+
+      # Debugging steps
+      - script: ls -la mern-user-crud/backend
+        displayName: 'List files in backend directory'
+
+      - script: ls -la mern-user-crud/frontend/dist
+        displayName: 'List files in frontend/dist directory'
+
+      # Upload artifact for deployment
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(System.DefaultWorkingDirectory)/mern-user-crud/backend'
+          artifactName: 'backend'
+          publishLocation: 'Container'
+        displayName: 'Publish Backend Artifact'
+
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: '$(System.DefaultWorkingDirectory)/mern-user-crud/frontend/dist'
+          artifactName: 'frontend'
+          publishLocation: 'Container'
+        displayName: 'Publish Frontend Artifact'
+
+
+  - job: Deploy
+    displayName: 'Deploy Node.js App to Azure Web App'
+    dependsOn: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          artifactName: 'backend'
+          downloadPath: '$(System.DefaultWorkingDirectory)/backend-artifact'
+        displayName: 'Download Backend Artifact'
+
+      - task: DownloadBuildArtifacts@0
+        inputs:
+          artifactName: 'frontend'
+          downloadPath: '$(System.DefaultWorkingDirectory)/frontend-artifact'
+        displayName: 'Download Frontend Artifact'
+
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
+          appName: 'ReactDemoAppDeploy-backend'  # Replace with your Azure Web App backend name
+          package: '$(System.DefaultWorkingDirectory)/backend-artifact'
+        displayName: 'Deploy Backend to Azure Web App'
+
+      - task: AzureWebApp@1
+        inputs:
+          azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
+          appName: 'ReactDemoAppDeploy-frontend'  # Replace with your Azure Web App frontend name
+          package: '$(System.DefaultWorkingDirectory)/frontend-artifact'
+        displayName: 'Deploy Frontend to Azure Web App'

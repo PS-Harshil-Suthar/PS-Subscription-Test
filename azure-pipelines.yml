@@ -72,13 +72,13 @@ jobs:
       - task: AzureWebApp@1
         inputs:
           azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
-          appName: 'ReactDemoAppDeploy-backend'  # Replace with your Azure Web App backend name
+          appName: 'ReactDemoAppDeploy'  # Replace with your Azure Web App backend name
           package: '$(System.DefaultWorkingDirectory)/backend-artifact'
         displayName: 'Deploy Backend to Azure Web App'
 
       - task: AzureWebApp@1
         inputs:
           azureSubscription: 'Madhusudan Parasar VSEnt–MPN'  # Replace with your Azure subscription service connection
-          appName: 'ReactDemoAppDeploy-frontend'  # Replace with your Azure Web App frontend name
+          appName: 'ReactDemoAppDeploy'  # Replace with your Azure Web App frontend name
           package: '$(System.DefaultWorkingDirectory)/frontend-artifact'
         displayName: 'Deploy Frontend to Azure Web App'
